@@ -35,7 +35,7 @@ qos_profile_B1 = QoSProfile(
     history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST
     depth=1                                      # Keep one message in history 1
 )
-current_profile = qos_profile_R10
+current_profile = qos_profile_B10
 
 class ImagePublisher(Node):
   """
