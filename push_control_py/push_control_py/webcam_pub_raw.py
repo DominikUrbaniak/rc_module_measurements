@@ -97,7 +97,7 @@ class ImagePublisher(Node):
       self.counter = self.counter + 1
       #end_time = time.time()
       #computation_time = end_time - start_time
-      #self.get_logger().info('ArUco tag computation time: {:.2f} ms'.format(computation_time * 1000))
+      self.get_logger().info(f'Publishing image number {self.counter}')
 
 
 
