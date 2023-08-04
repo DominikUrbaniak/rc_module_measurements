@@ -35,7 +35,7 @@ qos_profile_B1 = QoSProfile(
     history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST
     depth=1                                      # Keep one message in history 1
 )
-current_profile = qos_profile_R10
+current_profile = qos_profile_B10
 
 class ImagePublisher(Node):
   """
@@ -99,7 +99,7 @@ class ImagePublisher(Node):
       #end_time = time.time()
       #computation_time = end_time - start_time
       #self.get_logger().info('ArUco tag computation time: {:.2f} ms'.format(computation_time * 1000))
-
+      self.get_logger().info(f'Sending image number {self.counter}')
 
 
 def main(args=None):
