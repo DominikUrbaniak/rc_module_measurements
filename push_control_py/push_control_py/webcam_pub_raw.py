@@ -68,9 +68,9 @@ class ImagePublisher(Node):
         camera_id = sys.argv[1]
     self.get_logger().info(f'Selected camera id: {camera_id}')
     self.cap = cv2.VideoCapture(camera_id)
-    self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, image_width)
-    self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, image_height)
-    self.cap.set(cv2.CAP_PROP_FPS, fps)
+    #self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, image_width)
+    #self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, image_height)
+    #self.cap.set(cv2.CAP_PROP_FPS, fps)
 
     # Used to convert between ROS and OpenCV images
     self.cv_bridge = CvBridge()
