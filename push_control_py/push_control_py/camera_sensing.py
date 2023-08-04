@@ -31,7 +31,7 @@ qos_profile_B1 = QoSProfile(
     depth=1                                      # Keep one message in history 1
 )
 
-current_profile = qos_profile_R10
+current_profile = qos_profile_B10
 
 class ArUcoTagDetectionNode(Node):
     def __init__(self):
@@ -128,6 +128,7 @@ class ArUcoTagDetectionNode(Node):
             np.savetxt('docs/data/aruco_latency_measurement.csv', self.latencies, delimiter=',')
             self.get_logger().info(f'Successful measurement!')
             rclpy.shutdown()
+        self.get_logger().info(f'Counter id: {counter_id}, latency: {latency}')
         #self.get_logger().info(f'Tag position: {self.tag_position_camera}, tag orientation: {self.euler_angles}')
         #self.get_logger().info('ArUco tag computation time: {:.2f} ms'.format(computation_time * 1000))
         self.publisher_.publish(self.cv_bridge.cv2_to_imgmsg(cv_image))
