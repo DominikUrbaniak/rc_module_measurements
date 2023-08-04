@@ -65,7 +65,7 @@ class ImagePublisher(Node):
     # The argument '0' gets the default webcam.
     camera_id = 0
     if len(sys.argv) > 1:
-        camera_id = sys.argv[1]
+        camera_id = int(sys.argv[1])
     self.get_logger().info(f'Selected camera id: {camera_id}')
     self.cap = cv2.VideoCapture(camera_id)
     #self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, image_width)
