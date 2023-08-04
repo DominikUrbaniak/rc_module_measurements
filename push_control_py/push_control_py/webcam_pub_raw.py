@@ -53,7 +53,7 @@ class ImagePublisher(Node):
     self.counter = 0
     # Create the publisher. This publisher will publish an Image
     # to the video_frames topic. The queue size is 10 messages.
-    self.publisher_ = self.create_publisher(Image, 'camera/image_raw', current_profile)
+    self.publisher_ = self.create_publisher(Image, 'camera/image_raw2', current_profile)
 
     # We will publish a message every 0.1 seconds
     timer_period = 1.0/fps  # seconds
