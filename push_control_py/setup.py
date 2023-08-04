@@ -27,6 +27,7 @@ setup(
             'qos_test_subscriber = push_control_py.qos_test_subscriber:main',
             'camera_sensing = push_control_py.camera_sensing:main',
             'webcam_pub = push_control_py.webcam_pub:main',
+            'webcam_pub_raw = push_control_py.webcam_pub_raw:main',
             'camera_sensing_client = push_control_py.camera_sensing_client:main',
             'webcam_srv = push_control_py.webcam_srv:main',
             'rc_april_tag_detect_client = push_control_py.rc_tagdetect:rc_april_tag_detect_client',
