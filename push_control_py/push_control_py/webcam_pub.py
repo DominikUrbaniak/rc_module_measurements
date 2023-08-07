@@ -15,8 +15,9 @@ import time
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from custom_interfaces.msg import ImageStampId
 from push_control_py.qos_profiles import qos_profile_R1_deadline
-from rclpy.publisher import PublisherEventCallbacks
-current_profile = qos_profile_R1_deadline
+from push_control_py.qos_profiles import qos_profile_R1, qos_profile_R10, qos_profile_B1, qos_profile_B10
+
+qos_profiles = {'R1':qos_profile_R1,'R10':qos_profile_R10,'B1':qos_profile_B1,'B10':qos_profile_B10}
 
 class ImagePublisher(Node):
   """
@@ -37,7 +38,9 @@ class ImagePublisher(Node):
     #self.publisher_callbacks = PublisherEventCallbacks(
 #        deadline=self.pub_deadline_event
 #    )
-    self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', current_profile)#,event_callbacks=self.publisher_callbacks
+    self.qos_profile = "R10" #default profile
+
+    self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', qos_profiles[self.qos_profile])#,event_callbacks=self.publisher_callbacks
 
     # We will publish a message every 0.1 seconds
     timer_period = 1.0/fps  # seconds
@@ -57,10 +60,10 @@ class ImagePublisher(Node):
     #self.cameraMatrix = 1000*np.array([[1.6695,0.0,0.9207],[0.0,1.6718,0.5518],[0,0,0.0010]]) #Logitech Desktop webcam
     #self.distortionCoeffs = np.array([0.0772,-0.2883,0.0,0.0]) #k1,k2,p1,p2
 
-  def pub_deadline_event(self, event):
-    count = event.total_count
-    delta = event.total_count_change
-    self.get_logger().info(f'Requested deadline missed - total {count} delta {delta}')
+  #def pub_deadline_event(self, event):
+    #count = event.total_count
+    #delta = event.total_count_change
+    #self.get_logger().info(f'Requested deadline missed - total {count} delta {delta}')
 
   def timer_callback(self):
     """
