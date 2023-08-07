@@ -32,7 +32,7 @@ class ArUcoTagDetectionNode(Node):
         self.euler_angles = np.zeros(3)
         self.communication_duration = 5
 
-        self.latencies = np.zeros([self.n_data_points,4])
+
         self.counter = 0
         self.tag_found = 0
         self.qos_profile = "R10" #default profile
@@ -44,6 +44,7 @@ class ArUcoTagDetectionNode(Node):
                 self.file_note = sys.argv[3]
         self.get_logger().info(f'Starting measurement with qos_profile: {self.qos_profile} and measurement duration: {self.communication_duration}')
         self.n_data_points = 30*self.communication_duration
+        self.latencies = np.zeros([self.n_data_points,4])
         self.subscription = self.create_subscription(
             ImageStampId,
             'camera/image_raw',
@@ -59,8 +60,8 @@ class ArUcoTagDetectionNode(Node):
     #    self.get_logger().info(f'Requested deadline missed - total {count} delta {delta}')
 
     def image_callback(self, msg):
-        start_time = time.time()
-        start_time_ros2 = self.get_clock().now()
+        #start_time = time.time()
+        start_time_ros2 = self.get_clock().now().nanoseconds
         #self.get_logger().info(f'python time: {start_time} vs. ROS2 time: {start_time_ros2} vs. time stamp: {msg.stamp_ns}')
         #msg = ImageStampId()
         # Convert ROS Image message to OpenCV format
@@ -68,7 +69,7 @@ class ArUcoTagDetectionNode(Node):
 
         #pub_time_ns = msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec
 
-        latency = start_time_ros2.nanoseconds - msg.stamp_ns#(msg.header.stamp.seconds * 1e9 + msg.header.stamp.nanoseconds)
+        latency = start_time_ros2 - msg.stamp_ns#(msg.header.stamp.seconds * 1e9 + msg.header.stamp.nanoseconds)
         #latency = latency_stamp.sec * 1e9 + latency_stamp.nanosec
         counter_id = msg.id
 
@@ -122,12 +123,12 @@ class ArUcoTagDetectionNode(Node):
         #else:
             #found_aruco = False
 
-        end_time = time.time()
-        computation_time = int((end_time - start_time)*1e9) #nanosecs
+        end_time_ros2 = self.get_clock().now().nanoseconds
+        computation_time = end_time_ros2-start_time_ros2#int((end_time - start_time)*1e9) #nanosecs
         if self.counter < self.n_data_points:
             self.latencies[self.counter,:] = [counter_id, latency, self.tag_found, computation_time]
         else:
-            np.savetxt('docs/data/aruco_latency_measurement_'+self.qos_profile+'_'+self.communication_duration+'_'+self.file_note+'.csv', self.latencies, delimiter=',')
+            np.savetxt('docs/data/aruco_latency_measurement_'+self.qos_profile+'_'+str(self.communication_duration)+'_'+self.file_note+'.csv', self.latencies, delimiter=',')
             self.get_logger().info(f'Successful measurement!')
             rclpy.shutdown()
         #self.get_logger().info(f'Tag position: {self.tag_position_camera}, tag orientation: {self.euler_angles}')

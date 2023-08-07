@@ -3,7 +3,7 @@
 # Author:
 # - Addison Sears-Collins
 # - https://automaticaddison.com
-
+import sys
 # Import the necessary libraries
 import rclpy # Python Client Library for ROS 2
 from rclpy.node import Node # Handles the creation of nodes
@@ -39,7 +39,9 @@ class ImagePublisher(Node):
 #        deadline=self.pub_deadline_event
 #    )
     self.qos_profile = "R10" #default profile
-
+    if len(sys.argv)>1:
+        self.qos_profile = sys.argv[1]
+        self.get_logger().info(f'Starting measurement with qos_profile: {self.qos_profile}')
     self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', qos_profiles[self.qos_profile])#,event_callbacks=self.publisher_callbacks
 
     # We will publish a message every 0.1 seconds
