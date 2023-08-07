@@ -3,7 +3,7 @@
 # Author:
 # - Addison Sears-Collins
 # - https://automaticaddison.com
-import sys
+
 # Import the necessary libraries
 import rclpy # Python Client Library for ROS 2
 from rclpy.node import Node # Handles the creation of nodes
@@ -14,28 +14,9 @@ import numpy as np
 import time
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from custom_interfaces.msg import ImageStampId
-# Define QoS profiles
-qos_profile_R10 = QoSProfile(
-    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_ALL,         # Keep all messages KEEP_ALL
-    depth=10                                      # Keep 10 messages in history 10
-)
-qos_profile_R1 = QoSProfile(
-    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST
-    depth=1                                      # Keep one message in history 1
-)
-qos_profile_B10 = QoSProfile(
-    reliability=QoSReliabilityPolicy.BEST_EFFORT,  # Best effort delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_ALL,         # Keep all messages KEEP_ALL
-    depth=10                                      # Keep 10 messages in history 10
-)
-qos_profile_B1 = QoSProfile(
-    reliability=QoSReliabilityPolicy.BEST_EFFORT,  # Reliable delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST
-    depth=1                                      # Keep one message in history 1
-)
-current_profile = qos_profile_R10
+from push_control_py.qos_profiles import qos_profile_R1_deadline
+from rclpy.publisher import PublisherEventCallbacks
+current_profile = qos_profile_R1_deadline
 
 class ImagePublisher(Node):
   """
@@ -53,7 +34,10 @@ class ImagePublisher(Node):
     self.counter = 0
     # Create the publisher. This publisher will publish an Image
     # to the video_frames topic. The queue size is 10 messages.
-    self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', current_profile)
+    #self.publisher_callbacks = PublisherEventCallbacks(
+#        deadline=self.pub_deadline_event
+#    )
+    self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', current_profile)#,event_callbacks=self.publisher_callbacks
 
     # We will publish a message every 0.1 seconds
     timer_period = 1.0/fps  # seconds
@@ -63,12 +47,7 @@ class ImagePublisher(Node):
 
     # Create a VideoCapture object
     # The argument '0' gets the default webcam.
-    camera_id = 0
-    if len(sys.argv) > 1:
-        camera_id = int(sys.argv[1])
-    self.get_logger().info(f'Selected camera id: {camera_id}')
-    self.cap = cv2.VideoCapture(camera_id)
-    
+    self.cap = cv2.VideoCapture(0)
     self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, image_width)
     self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, image_height)
     self.cap.set(cv2.CAP_PROP_FPS, fps)
@@ -77,6 +56,11 @@ class ImagePublisher(Node):
     self.cv_bridge = CvBridge()
     #self.cameraMatrix = 1000*np.array([[1.6695,0.0,0.9207],[0.0,1.6718,0.5518],[0,0,0.0010]]) #Logitech Desktop webcam
     #self.distortionCoeffs = np.array([0.0772,-0.2883,0.0,0.0]) #k1,k2,p1,p2
+
+  def pub_deadline_event(self, event):
+    count = event.total_count
+    delta = event.total_count_change
+    self.get_logger().info(f'Requested deadline missed - total {count} delta {delta}')
 
   def timer_callback(self):
     """
@@ -98,8 +82,8 @@ class ImagePublisher(Node):
       self.counter = self.counter + 1
       #end_time = time.time()
       #computation_time = end_time - start_time
-      #self.get_logger().info('ArUco tag computation time: {:.2f} ms'.format(computation_time * 1000))
-      self.get_logger().info(f'Sending image number {self.counter}')
+      #self.get_logger().info(f'Sending image #{self.counter}')
+
 
 
 def main(args=None):
