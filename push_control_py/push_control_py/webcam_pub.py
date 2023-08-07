@@ -38,10 +38,13 @@ class ImagePublisher(Node):
     #self.publisher_callbacks = PublisherEventCallbacks(
 #        deadline=self.pub_deadline_event
 #    )
+    camera_id = 0
     self.qos_profile = "R10" #default profile
     if len(sys.argv)>1:
         self.qos_profile = sys.argv[1]
-        self.get_logger().info(f'Starting measurement with qos_profile: {self.qos_profile}')
+        if len(sys.argv) > 2:
+            camera_id = int(sys.argv[2])
+        self.get_logger().info(f'Starting measurement with qos_profile: {self.qos_profile}, camera id: {camera_id}')
     self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', qos_profiles[self.qos_profile])#,event_callbacks=self.publisher_callbacks
 
     # We will publish a message every 0.1 seconds
@@ -52,7 +55,7 @@ class ImagePublisher(Node):
 
     # Create a VideoCapture object
     # The argument '0' gets the default webcam.
-    self.cap = cv2.VideoCapture(0)
+    self.cap = cv2.VideoCapture(camera_id)
     self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, image_width)
     self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, image_height)
     self.cap.set(cv2.CAP_PROP_FPS, fps)
