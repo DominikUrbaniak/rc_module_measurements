@@ -5,7 +5,7 @@ from custom_interfaces.msg import PoseSensing
 import time
 
 counter = 0
-communication_rate = 120
+communication_rate = 30
 class LowLatencyPublisher(Node):
     def __init__(self):
         super().__init__('low_latency_publisher')
