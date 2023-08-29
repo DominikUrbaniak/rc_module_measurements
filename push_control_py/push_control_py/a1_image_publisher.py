@@ -44,7 +44,7 @@ class ImagePublisher(Node):
         self.qos_profile = sys.argv[1]
         if len(sys.argv) > 2:
             camera_id = int(sys.argv[2])
-        self.get_logger().info(f'Starting measurement with qos_profile: {self.qos_profile}, camera id: {camera_id}')
+    self.get_logger().info(f'Starting measurement with qos_profile: {self.qos_profile}, camera id: {camera_id}')
     self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', qos_profiles[self.qos_profile])#,event_callbacks=self.publisher_callbacks
 
     # We will publish a message every 0.1 seconds
@@ -59,7 +59,7 @@ class ImagePublisher(Node):
     self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, image_width)
     self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, image_height)
     self.cap.set(cv2.CAP_PROP_FPS, fps)
-    
+
 
     # Used to convert between ROS and OpenCV images
     self.cv_bridge = CvBridge()

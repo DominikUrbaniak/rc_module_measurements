@@ -49,9 +49,12 @@ class ImageService(Node):
     def service_callback(self, request, response):
         #self.get_logger().info(f'time after service call start: {time.time()-request.timestamp_in}')
         start_time = self.get_clock().now().nanoseconds
+        #self.get_logger().info(f'start time srv: {start_time}')
         cv_image = self.cv_bridge.imgmsg_to_cv2(request.image)
         counter_id = request.id
-
+        stamp_image_requested = request.stamp_ns
+        stamp_diff = start_time - stamp_image_requested
+        #self.get_logger().info(f'start time srv {counter_id}: {start_time}, diff: {stamp_diff}')
         # Define the dictionary of ArUco tags
         aruco_dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
 
@@ -118,7 +121,8 @@ class ImageService(Node):
         response.id_response = counter_id
         response.tag_ids = ids_list
         response.stamp_ns_pose_response = end_time
-        response.stamp_ns_image_request = start_time
+        response.stamp_ns_image_request = stamp_image_requested
+        response.stamp_ns_image_received = start_time
         response.qos_profile = self.qos_profile
         return response
 

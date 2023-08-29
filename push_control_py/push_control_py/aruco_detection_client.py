@@ -36,13 +36,14 @@ class ArUcoTagDetectionNode(Node):
         timer_period = 1.0/fps  # seconds
 
         self.n_data_points = fps*self.communication_duration
-        self.latencies = np.zeros([self.n_data_points,7])
+        self.latencies = np.zeros([self.n_data_points,8])
         self.counter = 0
         self.tag_found = 0
         self.tag_poses = []
         self.tag_ids = []
         self.stamp_srv_request = 0
         self.stamp_srv_response = 0
+        self.stamp_srv_received = 0
         self.id_srv = 0
         self.qos_profile = "R10"
 
@@ -75,16 +76,17 @@ class ArUcoTagDetectionNode(Node):
         #msg = ImageStampId()
         # Convert ROS Image message to OpenCV format
         if not self.client1.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warn('aruco_image_service not available.')
+            self.get_logger().warn('aruco_image_service not available. Trying again...')
             return
 
         ret, frame = self.cap.read()
-        start_time = self.get_clock().now().nanoseconds
+        start_time_client = self.get_clock().now().nanoseconds
+        #self.get_logger().info(f'start time client: {start_time_client}')
 
         if ret == True:
             request = PoseDetection.Request()
             request.image = self.cv_bridge.cv2_to_imgmsg(frame)
-            request.stamp_ns = start_time
+            request.stamp_ns = start_time_client
             request.id = self.counter
 
             response = self.client1.call(request)
@@ -94,15 +96,16 @@ class ArUcoTagDetectionNode(Node):
             self.stamp_srv_response = response.stamp_ns_pose_response
             self.id_srv = response.id_response
             self.stamp_srv_request = response.stamp_ns_image_request
+            self.stamp_srv_received = response.stamp_ns_image_received
             self.qos_profile = response.qos_profile
 
 
         #pub_time_ns = msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec
-        end_time = self.get_clock().now().nanoseconds
+        end_time_client = self.get_clock().now().nanoseconds
 
 
         if self.counter < self.n_data_points:
-            self.latencies[self.counter,:] = [self.counter, self.id_srv, start_time, self.stamp_srv_request, self.stamp_srv_response, end_time, len(self.tag_ids)]
+            self.latencies[self.counter,:] = [self.counter, self.id_srv, start_time_client, self.stamp_srv_request, self.stamp_srv_received, self.stamp_srv_response, end_time_client, len(self.tag_ids)]
         else:
             np.savetxt('docs/data/qos_tests/a01_latency_measurement_srv_'+self.qos_profile+'_'+str(self.communication_duration)+'_'+self.file_note+'.csv', self.latencies, delimiter=',')
             self.get_logger().info(f'Successful measurement!')
