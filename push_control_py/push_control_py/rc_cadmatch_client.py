@@ -10,7 +10,7 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from custom_interfaces.srv import ImageStampIdSrv
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup, MutuallyExclusiveCallbackGroup
-from rc_reason_msgs.srv import DetectItems
+from rc_reason_msgs.srv import CadMatchDetectObject
 from rc_reason_msgs.msg import ItemModel
 from rc_reason_msgs.msg import Item
 from rc_reason_msgs.msg import Rectangle
@@ -40,9 +40,9 @@ qos_profile_B1 = QoSProfile(
 
 current_profile = qos_profile_B10
 counter1 = 0
-class RcBoxPickNode(Node):
+class RcCadMatchNode(Node):
     def __init__(self):
-        super().__init__('rc_boxpick_node')
+        super().__init__('rc_cadmatch_node')
         #self.get_logger().info(f'Starting camera...')
 
         #self.publisher_ = self.create_publisher(Image, 'camera/image_arucos', 10)
@@ -62,7 +62,7 @@ class RcBoxPickNode(Node):
         self.timer1 = self.create_timer(1.0/self.communication_rate, self.timer_callback1, callback_group=self.timer1_callback_group)
 
         # Create the client in the service callback group
-        self.client1 = self.create_client(DetectItems, '/rc_boxpick_client/detect_items', callback_group=self.service1_callback_group)
+        self.client1 = self.create_client(CadMatchDetectObject, '/rc_boxpick_client/detect_items', callback_group=self.service1_callback_group)
 
         #found_aruco = False
 
@@ -77,15 +77,11 @@ class RcBoxPickNode(Node):
             return
         global counter1
         counter1 = counter1 + 1
-        request = DetectItems.Request()
-        item_model = ItemModel()
-        item_model.type = "RECTANGLE"
-        item_model.rectangle.min_dimensions = Rectangle(x=0.04,y=0.04)
-        item_model.rectangle.max_dimensions = Rectangle(x=0.06,y=0.06)
+        request = CadMatchDetectObject.Request()
+        request.tmeplate_id = "Basler_SCS10UU"
         request.pose_frame = "camera"
         request.load_carrier_id = "small grey box"
-        #request.region_of_interest_id = "cube_roi_01"
-        request.item_models = [item_model]
+        
         #request.timestamp_in = time.time()
         response = self.client1.call(request)
         #detected_tag = DetectedTag()
@@ -125,7 +121,7 @@ class RcBoxPickNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = RcBoxPickNode()
+    node = RcCadMatchNode()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
     #executor.add_node(control_node)

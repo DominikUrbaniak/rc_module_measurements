@@ -24,11 +24,11 @@ keys_control = []
 values_control = []
 
 cube_pose = Pose()
-cube_y_init = 0.58
+cube_y_init = 0.46
 
 v_init = 0.01
-v_z_offset = 0.007#0.011
-v_x_offset = -0.001
+v_z_offset = 0.011#0.011
+v_x_offset = -0.005
 manipulability_index = 1
 time_stamp_eef = 0
 eef_x = 0.0
@@ -70,8 +70,8 @@ if len(sys.argv)>3:
 output_dir = "docs/data/logging/"
 if n_freshness_samples == 1:
     output_dir = "docs/data/logging_tcp/"
-output_config_filename = output_dir + str(start_time) + "_" + network + "_" + str(sensing_rate) + "_config_parameters.txt"
-output_log_filename = output_dir + str(start_time) + "_" + network + "_" + str(sensing_rate) + "_logging.txt"
+output_config_filename = output_dir + str(start_time) + "_" + network + "_" + str(sensing_rate) + "_config_parameters_ur3e.txt"
+output_log_filename = output_dir + str(start_time) + "_" + network + "_" + str(sensing_rate) + "_logging_ur3e.txt"
 
 general_keys = ["go_const_vel","const_vel","network","computation_ms","n_episode","vel_decay_factor","vel_decay_shift","quality_of_service","sensing_rate","push_distance","n_freshness_samples"]
 general_values = [go_const_vel,const_vel,network,computation_ms,n_episode,vel_decay_factor, vel_decay_shift,qos_profile,sensing_rate,push_distance,n_freshness_samples]

@@ -7,6 +7,21 @@ qos_profile_R10 = QoSProfile(
     history=QoSHistoryPolicy.KEEP_LAST,         # Keep last messages not KEEP_ALL
     depth=10                                      # Keep 10 messages in history 10
 )
+qos_profile_R5 = QoSProfile(
+    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
+    history=QoSHistoryPolicy.KEEP_LAST,         # Keep last messages not KEEP_ALL
+    depth=5                                      # Keep 10 messages in history 10
+)
+qos_profile_R20 = QoSProfile(
+    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
+    history=QoSHistoryPolicy.KEEP_LAST,         # Keep last messages not KEEP_ALL
+    depth=20                                      # Keep 10 messages in history 10
+)
+qos_profile_R10 = QoSProfile(
+    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
+    history=QoSHistoryPolicy.KEEP_LAST,         # Keep last messages not KEEP_ALL
+    depth=10                                      # Keep 10 messages in history 10
+)
 qos_profile_R1 = QoSProfile(
     reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
     history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST

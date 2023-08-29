@@ -9,28 +9,9 @@ import numpy as np
 import time
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from custom_interfaces.srv import ImageStampIdSrv
-# Define QoS profiles
-qos_profile_R10 = QoSProfile(
-    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_ALL,         # Keep all messages KEEP_ALL
-    depth=10                                      # Keep 10 messages in history 10
-)
-qos_profile_R1 = QoSProfile(
-    reliability=QoSReliabilityPolicy.RELIABLE,  # Reliable delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST
-    depth=1                                      # Keep one message in history 1
-)
-qos_profile_B10 = QoSProfile(
-    reliability=QoSReliabilityPolicy.BEST_EFFORT,  # Best effort delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_ALL,         # Keep all messages KEEP_ALL
-    depth=10                                      # Keep 10 messages in history 10
-)
-qos_profile_B1 = QoSProfile(
-    reliability=QoSReliabilityPolicy.BEST_EFFORT,  # Reliable delivery RELIABLE
-    history=QoSHistoryPolicy.KEEP_LAST,         # Keep only the last message KEEP_LAST
-    depth=1                                      # Keep one message in history 1
-)
-current_profile = qos_profile_B1
+from push_control_py.qos_profiles import qos_profile_R1
+
+current_profile = qos_profile_R1
 
 class ImageService(Node):
   """
@@ -51,7 +32,7 @@ class ImageService(Node):
     # Create the publisher. This publisher will publish an Image
     # to the video_frames topic. The queue size is 10 messages.
     #self.publisher_ = self.create_publisher(ImageStampId, 'camera/image_raw', current_profile)
-    self.service = self.create_service(ImageStampIdSrv, 'aruco_image_service', self.service_callback, qos_profile=qos_profile_R10)
+    self.service = self.create_service(ImageStampIdSrv, 'aruco_image_service', self.service_callback, qos_profile=current_profile)
     # We will publish a message every 0.1 seconds
     timer_period = 1.0/fps  # seconds
 
